@@ -1,5 +1,6 @@
 "use server";
 import pool from "@/lib/db";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function createExpense(
@@ -26,4 +27,15 @@ export async function createExpense(
     [amount, category.trim(), spentAt, memo || null],
   );
   redirect("/expenses");
+}
+
+export async function deleteExpense(formData: FormData) {
+  const idRaw = formData.get("id");
+
+  const id = Number(idRaw);
+  if (!Number.isInteger(id) || id <= 0) {
+    return;
+  }
+  await pool.query("delete from expenses where id = $1", [id]);
+  revalidatePath("/expenses");
 }
