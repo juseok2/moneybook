@@ -25,5 +25,5 @@ export async function createExpense(
     "insert into expenses (amount, category, spent_at, memo) values ($1, $2, $3, $4)",
     [amount, category.trim(), spentAt, memo || null],
   );
-  redirect("/");
+  redirect("/expenses");
 }
