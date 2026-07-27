@@ -1,5 +1,6 @@
 import pool from "@/lib/db";
 import { deleteExpense } from "@/app/expenses/actions";
+import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
@@ -22,6 +23,7 @@ export default async function Page() {
               <input type="hidden" value={item.id} name="id" />
               <button type="submit">삭제</button>
             </form>
+            <Link href={`/expenses/${item.id}/edit`}>수정</Link>
           </li>
         );
       })}

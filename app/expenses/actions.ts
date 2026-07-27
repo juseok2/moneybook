@@ -39,3 +39,37 @@ export async function deleteExpense(formData: FormData) {
   await pool.query("delete from expenses where id = $1", [id]);
   revalidatePath("/expenses");
 }
+
+export async function updateExpense(
+  prevState: { message: string },
+  formData: FormData,
+) {
+  const idRaw = formData.get("id");
+
+  const id = Number(idRaw);
+
+  const amountRaw = formData.get("amount");
+  const category = formData.get("category");
+  const spentAt = formData.get("spent_at");
+  const memo = formData.get("memo");
+
+  const amount = Number(amountRaw);
+  if (!Number.isInteger(amount) || amount <= 0) {
+    return { message: "금액은 1 이상의 정수여야 합니다." };
+  }
+  if (typeof category !== "string" || category.trim() === "") {
+    return { message: "카테고리를 입력하세요." };
+  }
+  if (typeof spentAt !== "string" || spentAt.trim() === "") {
+    return { message: "날짜를 입력하세요." };
+  }
+  if (!Number.isInteger(id) || id <= 0) {
+    return { message: "잘못된 요청입니다." };
+  }
+  await pool.query(
+    "update expenses set amount = $1, category = $2, memo = $3, spent_at = $4 where id = $5",
+    [amount, category, memo, spentAt, id],
+  );
+  revalidatePath("/expenses");
+  redirect("/expenses");
+}
