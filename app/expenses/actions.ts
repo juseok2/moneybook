@@ -49,11 +49,15 @@ export async function updateExpense(
   const id = Number(idRaw);
 
   const amountRaw = formData.get("amount");
+  const amount = Number(amountRaw);
   const category = formData.get("category");
   const spentAt = formData.get("spent_at");
   const memo = formData.get("memo");
 
-  const amount = Number(amountRaw);
+  if (!Number.isInteger(id) || id <= 0) {
+    return { message: "잘못된 접근입니다." };
+  }
+
   if (!Number.isInteger(amount) || amount <= 0) {
     return { message: "금액은 1 이상의 정수여야 합니다." };
   }
@@ -61,14 +65,12 @@ export async function updateExpense(
     return { message: "카테고리를 입력하세요." };
   }
   if (typeof spentAt !== "string" || spentAt.trim() === "") {
-    return { message: "날짜를 입력하세요." };
+    return { message: "날짜를 입력하세요" };
   }
-  if (!Number.isInteger(id) || id <= 0) {
-    return { message: "잘못된 요청입니다." };
-  }
+
   await pool.query(
-    "update expenses set amount = $1, category = $2, memo = $3, spent_at = $4 where id = $5",
-    [amount, category, memo, spentAt, id],
+    "update expenses set amount = $1, category = $2 , spent_at = $3, memo = $4 where id = $5",
+    [amount, category.trim(), spentAt, memo || null, id],
   );
   revalidatePath("/expenses");
   redirect("/expenses");

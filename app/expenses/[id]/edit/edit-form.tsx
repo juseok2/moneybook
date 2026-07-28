@@ -1,9 +1,8 @@
 "use client";
-
 import { useActionState } from "react";
 import { updateExpense } from "../../actions";
 
-type Expense = {
+type editExpense = {
   id: number;
   amount: number;
   category: string;
@@ -11,14 +10,13 @@ type Expense = {
   spent_at: string;
 };
 
-export default function EditForm({ item }: { item: Expense }) {
+export default function EditPage({ item }: { item: editExpense }) {
   const [state, formAction, pending] = useActionState(updateExpense, {
     message: "",
   });
-
   return (
     <form action={formAction}>
-      <input type="hidden" name="id" value={item.id}></input>
+      <input type="hidden" name="id" defaultValue={item.id} />
       <input
         type="number"
         name="amount"
@@ -43,7 +41,7 @@ export default function EditForm({ item }: { item: Expense }) {
         type="text"
         name="memo"
         placeholder="메모"
-        defaultValue={item.memo ?? ""}
+        defaultValue={item.memo || ""}
       />
       <button type="submit" disabled={pending}>
         수정
