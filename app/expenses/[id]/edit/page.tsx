@@ -24,5 +24,5 @@ export default async function Page({
   if (editExpense === undefined) {
     notFound();
   }
-  return <EditForm item={editExpense}></EditForm>;
+  return <EditForm item={editExpense} />;
 }
