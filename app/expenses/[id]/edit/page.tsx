@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import EditPage from "./edit-form";
+import EditForm from "./edit-form";
 import pool from "@/lib/db";
 
 export default async function Page({
@@ -24,5 +24,5 @@ export default async function Page({
   if (editExpense === undefined) {
     notFound();
   }
-  return <EditPage item={editExpense}></EditPage>;
+  return <EditForm item={editExpense}></EditForm>;
 }
