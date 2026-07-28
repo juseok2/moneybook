@@ -8,10 +8,6 @@ export default async function Page({
 }: {
   searchParams: Promise<{ month?: string }>;
 }) {
-  const expensesList = await pool.query(
-    "select * from expenses order by spent_at desc",
-  );
-
   const today = new Date();
   const params = await searchParams;
   let month = params.month;
@@ -24,6 +20,11 @@ export default async function Page({
         ? "0" + String(today.getMonth() + 1)
         : String(today.getMonth() + 1));
   }
+
+  const expensesList = await pool.query(
+    "select * from expenses where spent_at >= $1::date and spent_at < $1::date + INTERVAL '1 month' order by spent_at desc",
+    [month + "-01"],
+  );
 
   return (
     <>
