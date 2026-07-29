@@ -26,29 +26,41 @@ export default async function Page({
     [month + "-01"],
   );
 
+  const totalAmount = await pool.query(
+    "select coalesce(sum(amount),0) as total from expenses where spent_at >= $1::date and spent_at < $1::date + INTERVAL '1 month'",
+    [month + "-01"],
+  );
+
   return (
     <>
       <p>{month} 지출</p>
+      <p>
+        {month} 총 지출 금액 : {totalAmount.rows[0].total}
+      </p>
       <br />
-      <ul>
-        {expensesList.rows.map((item) => {
-          return (
-            <li key={item.id}>
-              <p>지출명: {item.memo}</p>
-              <p>금액: {item.amount}</p>
-              <p>
-                지출일: {item.spent_at.getFullYear()}년{" "}
-                {item.spent_at.getMonth() + 1}월{item.spent_at.getDate()}일
-              </p>
-              <form action={deleteExpense}>
-                <input type="hidden" value={item.id} name="id" />
-                <button type="submit">삭제</button>
-              </form>
-              <Link href={`/expenses/${item.id}/edit`}>수정</Link>
-            </li>
-          );
-        })}
-      </ul>
+      {expensesList.rows.length ? (
+        <ul>
+          {expensesList.rows.map((item) => {
+            return (
+              <li key={item.id}>
+                <p>지출명: {item.memo}</p>
+                <p>금액: {item.amount}</p>
+                <p>
+                  지출일: {item.spent_at.getFullYear()}년{" "}
+                  {item.spent_at.getMonth() + 1}월{item.spent_at.getDate()}일
+                </p>
+                <form action={deleteExpense}>
+                  <input type="hidden" value={item.id} name="id" />
+                  <button type="submit">삭제</button>
+                </form>
+                <Link href={`/expenses/${item.id}/edit`}>수정</Link>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p>해당 달에 지출이 없습니다.</p>
+      )}
     </>
   );
 }
