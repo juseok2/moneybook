@@ -3,6 +3,16 @@ import { deleteExpense } from "@/app/expenses/actions";
 import Link from "next/link";
 export const dynamic = "force-dynamic";
 
+function formatMonth(year: number, monthIndex: number) {
+  const selectDate = new Date(year, monthIndex, 1);
+
+  return (
+    selectDate.getFullYear() +
+    "-" +
+    String(selectDate.getMonth() + 1).padStart(2, "0")
+  );
+}
+
 export default async function Page({
   searchParams,
 }: {
@@ -13,14 +23,8 @@ export default async function Page({
   let month = params.month;
 
   if (month === undefined || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
-    month =
-      String(today.getFullYear()) +
-      "-" +
-      (today.getMonth() + 1 < 10
-        ? "0" + String(today.getMonth() + 1)
-        : String(today.getMonth() + 1));
+    month = formatMonth(today.getFullYear(), today.getMonth());
   }
-
   const selectYear = Number(month.substring(0, 4));
   const selectMonth = Number(month.substring(5, 7));
 
@@ -37,21 +41,11 @@ export default async function Page({
   return (
     <>
       <Link
-        href={`/expenses?month=${
-          selectMonth - 1
-            ? selectYear + "-" + String(selectMonth - 1).padStart(2, "0")
-            : selectYear - 1 + "-" + "12"
-        }`}
+        href={`/expenses?month=${formatMonth(selectYear, selectMonth - 2)}`}
       >
         이전 달
       </Link>
-      <Link
-        href={`/expenses?month=${
-          selectMonth < 12
-            ? selectYear + "-" + String(selectMonth + 1).padStart(2, "0")
-            : selectYear + 1 + "-" + "01"
-        }`}
-      >
+      <Link href={`/expenses?month=${formatMonth(selectYear, selectMonth)}`}>
         다음 달
       </Link>
       <p>{month} 지출</p>
