@@ -21,6 +21,9 @@ export default async function Page({
         : String(today.getMonth() + 1));
   }
 
+  const selectYear = Number(month.substring(0, 4));
+  const selectMonth = Number(month.substring(5, 7));
+
   const expensesList = await pool.query(
     "select * from expenses where spent_at >= $1::date and spent_at < $1::date + INTERVAL '1 month' order by spent_at desc",
     [month + "-01"],
@@ -33,6 +36,24 @@ export default async function Page({
 
   return (
     <>
+      <Link
+        href={`/expenses?month=${
+          selectMonth - 1
+            ? selectYear + "-" + String(selectMonth - 1).padStart(2, "0")
+            : selectYear - 1 + "-" + "12"
+        }`}
+      >
+        이전 달
+      </Link>
+      <Link
+        href={`/expenses?month=${
+          selectMonth < 12
+            ? selectYear + "-" + String(selectMonth + 1).padStart(2, "0")
+            : selectYear + 1 + "-" + "01"
+        }`}
+      >
+        다음 달
+      </Link>
       <p>{month} 지출</p>
       <p>
         {month} 총 지출 금액 : {totalAmount.rows[0].total}
